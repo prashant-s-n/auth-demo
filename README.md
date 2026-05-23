@@ -19,12 +19,13 @@ After a successful login, the app redirects to a protected page with:
 1. Copy the env template:
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env
 ```
 
-2. Fill in `.env.local`:
+2. Fill in `.env`:
 
 ```env
+PORT=3000
 AUTH_SECRET=replace-with-a-long-random-secret
 AUTH_GOOGLE_ID=your-google-client-id
 AUTH_GOOGLE_SECRET=your-google-client-secret
@@ -45,7 +46,7 @@ In Google Cloud Console:
 3. Add this authorized redirect URI:
 
 ```text
-http://localhost:<PORT>/api/auth/callback/google
+http://localhost:{{PORT}}/api/auth/callback/google
 ```
 
 4. If your app is in testing mode, add your Google account as a test user
@@ -53,8 +54,9 @@ http://localhost:<PORT>/api/auth/callback/google
 
 Important:
 - Keep the redirect URI exactly as shown above
-- Replace `<PORT>` with the port your app is exposed on
-- The same redirect URI is used for both local runs and Docker Compose runs because the app is exposed on `localhost:<PORT>`
+- Replace `{{PORT}}` with the port your app is exposed on
+- The same redirect URI is used for both local runs and Docker Compose runs because the app is exposed on `localhost:{{PORT}}`
+- Set `PORT` in `.env` to the exact port you want to use
 
 ## Local Development
 
@@ -82,7 +84,7 @@ or with npm:
 npm run dev
 ```
 
-Open `http://localhost:<PORT>`.
+Open `http://localhost:{{PORT}}`.
 
 ## Docker Compose
 
@@ -91,7 +93,8 @@ This project includes a production-style Docker Compose setup:
 - one `app` service
 - a multi-stage Docker build
 - a standalone Next.js production runtime
-- environment variables loaded from local `.env.local`
+- all runtime config loaded from `.env`
+- no hardcoded port fallback in Compose
 
 ### Build and start
 
@@ -99,12 +102,12 @@ This project includes a production-style Docker Compose setup:
 docker compose up --build
 ```
 
-Open `http://localhost:3000`.
+Open `http://localhost:{{PORT}}`.
 
 OAuth still completes in your browser against the host URL above, not an internal container hostname, so your Google redirect URI remains:
 
 ```text
-http://localhost:<PORT>/api/auth/callback/google
+http://localhost:{{PORT}}/api/auth/callback/google
 ```
 
 ### Run in the background
@@ -127,7 +130,7 @@ docker compose up --build
 
 ## Usage
 
-1. Open `http://localhost:<PORT>`
+1. Open `http://localhost:{{PORT}}`
 2. Click the Google sign-in button
 3. Complete the Google OAuth flow
 4. After successful authentication, you will land on the protected app page
@@ -155,5 +158,5 @@ npm run start
 
 - If Google shows `Access blocked`, verify the OAuth client type is `Web application`
 - If Google says the request is invalid, recheck the exact redirect URI
-- If login works locally but not in Docker, confirm the app is still being accessed through `http://localhost:<PORT>`
-- If you change `.env.local`, restart the local server or rerun `docker compose up --build`
+- If login works locally but not in Docker, confirm the app is still being accessed through `http://localhost:{{PORT}}`
+- If you change `.env`, restart the local server or rerun `docker compose up --build`
