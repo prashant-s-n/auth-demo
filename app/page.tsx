@@ -20,7 +20,7 @@ export default async function HomePage() {
                   height={40}
                 />
               ) : null}
-              <span>{session.user.email ?? session.user.name ?? "Signed in"}</span>
+              <span>{session.user.name ?? "Signed in"}</span>
             </div>
             <div className="actions">
               <Link className="button" href="/hello">
